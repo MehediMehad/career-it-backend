@@ -7,60 +7,45 @@ model User {
   role     UserRoleEnum   @default(USER)
   status   UserStatusEnum @default(DEACTIVATE)
 
-  isVerified  Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   // Relations
-  devices Device[]
+  devices     Device[]
   fileUploads FileUpload[]
+
   @@index([name])
   @@map("users")
 }
 
-
 model Device {
-  id          String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  deviceId    String
-  deviceName  String?
-  deviceType  DeviceType?
+  deviceId   String
+  deviceName String?
+  deviceType DeviceType?
 
-  browser     String?
-  os          String?
+  browser String?
+  os      String?
 
-  ipAddress   String?
+  ipAddress String?
 
-  fcmToken    String?
+  fcmToken String?
 
-  isActive    Boolean  @default(true)
+  isActive Boolean @default(true)
 
   lastActiveAt DateTime @default(now())
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, deviceId])
   @@index([userId])
   @@map("devices")
-}
-
-model Notification {
-  id        String           @id @default(cuid())
-  userId    String
-  title     String
-  body      String
-  type      NotificationType @default(SYSTEM)
-  isRead    Boolean          @default(false)
-  metadata  Json?
-  createdAt DateTime         @default(now())
-
-  @@index([userId, isRead])
-  @@index([userId, createdAt])
-  @@map("notifications")
 }
 
 enum UserRoleEnum {
@@ -78,12 +63,4 @@ enum DeviceType {
   WEB
   ANDROID
   IOS
-}
-
-enum NotificationType {
-  SYSTEM
-  ORDER
-  PAYMENT
-  SECURITY
-  MESSAGE
 }
