@@ -37,13 +37,13 @@ router.post(
   AuthControllers.confirmPendingLogin,
 );
 
-router.get('/devices', auth('USER', 'ADMIN'), AuthControllers.getUserDevices);
+router.get('/devices', auth('STUDENT', 'INSTRUCTOR' ,'ADMIN'), AuthControllers.getUserDevices);
 
-router.delete('/devices/:deviceId', auth('USER', 'ADMIN'), AuthControllers.logoutDevice);
+router.delete('/devices/:deviceId', auth('STUDENT', 'INSTRUCTOR' ,'ADMIN'), AuthControllers.logoutDevice);
 
-router.post('/logout', auth('ADMIN', 'USER'), AuthControllers.logoutUser);
+router.post('/logout', auth('STUDENT', 'INSTRUCTOR' ,'ADMIN'), AuthControllers.logoutUser);
 
-router.post('/logout-all', auth('ADMIN', 'USER'), AuthControllers.logoutAllDevices);
+router.post('/logout-all', auth('STUDENT', 'INSTRUCTOR' ,'ADMIN'), AuthControllers.logoutAllDevices);
 
 router.post(
   '/forgot-password',
@@ -60,7 +60,7 @@ router.post(
 
 router.post(
   '/change-password',
-  auth('ADMIN', 'USER'),
+  auth('STUDENT', 'INSTRUCTOR' ,'ADMIN'),
   validateRequest(AuthsValidations.changePasswordSchema),
   AuthControllers.changePasswordIntoDB,
 );
@@ -80,6 +80,6 @@ router.post(
 
 router.post('/refresh-token', AuthControllers.refreshTokenIntoDB);
 
-router.get('/me', auth('USER', 'ADMIN'), AuthControllers.getMyProfile);
+router.get('/me', auth('STUDENT', 'INSTRUCTOR' ,'ADMIN'), AuthControllers.getMyProfile);
 
 export const AuthRoute = router;

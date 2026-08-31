@@ -1,0 +1,18 @@
+model Module {
+  id           String   @id @default(uuid())
+  moduleNumber Int      @unique // Unique module number within the course
+  title        String
+  lessonsCount Int      @default(0) // Number of lessons in this module not only videos all content
+  createdAt    DateTime @default(now())
+
+  // Relations
+  courseId    String
+  milestoneId String @unique // 1:1 relation with Milestone
+
+  // Relations
+  milestone Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  course    Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons   Lesson[]
+
+  @@map("modules")
+}

@@ -1,0 +1,16 @@
+model Milestone {
+  id          String   @id @default(uuid())
+  title       String
+  subtitle    String
+  moduleCount Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  courseId String
+
+  // Relations
+  course Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module Module?
+
+  @@map("milestones")
+}

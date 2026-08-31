@@ -1,0 +1,34 @@
+model Device {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  deviceId   String
+  deviceName String?
+  deviceType DeviceType?
+
+  browser String?
+  os      String?
+
+  ipAddress String?
+
+  fcmToken String?
+
+  isActive Boolean @default(true)
+
+  lastActiveAt DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, deviceId])
+  @@index([userId])
+  @@map("devices")
+}
+
+enum DeviceType {
+  WEB
+  ANDROID
+  IOS
+}

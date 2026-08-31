@@ -1,10 +1,11 @@
 model User {
   id       String         @id @default(uuid())
+  customId String         @unique // ex: "STUDENT-1234" Or "INSTRUCTOR-1234"
   name     String
   image    String
   email    String         @unique
   password String
-  role     UserRoleEnum   @default(USER)
+  role     UserRoleEnum   @default(STUDENT)
   status   UserStatusEnum @default(DEACTIVATE)
 
   isVerified Boolean  @default(false)
@@ -12,44 +13,19 @@ model User {
   updatedAt  DateTime @updatedAt
 
   // Relations
-  devices     Device[]
-  fileUploads FileUpload[]
+  devices            Device[]
+  fileUploads        FileUpload[]
+  instructorProfile  InstructorProfile?
+  studentProfile     StudentProfile?
+  courseCertificates CourseCertificate[]
 
   @@index([name])
   @@map("users")
 }
 
-model Device {
-  id String @id @default(cuid())
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  deviceId   String
-  deviceName String?
-  deviceType DeviceType?
-
-  browser String?
-  os      String?
-
-  ipAddress String?
-
-  fcmToken String?
-
-  isActive Boolean @default(true)
-
-  lastActiveAt DateTime @default(now())
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, deviceId])
-  @@index([userId])
-  @@map("devices")
-}
-
 enum UserRoleEnum {
-  USER
+  STUDENT
+  INSTRUCTOR
   ADMIN
 }
 
@@ -57,10 +33,4 @@ enum UserStatusEnum {
   DEACTIVATE
   ACTIVE
   BLOCKED
-}
-
-enum DeviceType {
-  WEB
-  ANDROID
-  IOS
 }

@@ -1,0 +1,44 @@
+model Course {
+  id               String          @id @default(uuid())
+  title            String
+  description      String
+  about            String
+  price            Decimal         @default(0.00) @db.Decimal(10, 2)
+  level            CourseLevelEnum
+  requirements     String[]
+  learningOutcomes String[]
+
+  // Metrics shown in UI
+  rating          Decimal @default(0.00) @db.Decimal(3, 2)
+  totalReviews    Int     @default(0)
+  totalStudents   Int     @default(0)
+  totalLessons    Int     @default(0)
+  durationMinutes Int     @default(0)
+
+  // Flags
+  isPublished Boolean @default(false)
+  isFeatured  Boolean @default(false)
+  isDeleted   Boolean @default(false)
+
+  // Relations
+  instructorProfileId String
+  categoryId          String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  instructorProfile  InstructorProfile   @relation(fields: [instructorProfileId], references: [id], onDelete: Cascade)
+  category           Category            @relation(fields: [categoryId], references: [id])
+  milestones         Milestone[]
+  modules            Module[]
+  courseCertificates CourseCertificate[]
+
+  @@map("courses")
+}
+
+enum CourseLevelEnum {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}

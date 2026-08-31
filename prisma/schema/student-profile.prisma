@@ -1,0 +1,34 @@
+model StudentProfile {
+  id String @id @default(uuid())
+
+  // Student specific fields
+  bio            String
+  dateOfBirth    DateTime
+  phoneNumber    String
+  whatsappNumber String
+  gender         GenderEnum
+  education      String // e.g., "B.Sc in CSE"
+  institution    String // University or College name
+
+  currentAddress   Json
+  permanentAddress Json
+  importantLinks   Json
+  educationDetails Json
+  extraDetails     Json
+  jobProfile       Json // { "currentJob": "Software Engineer", "company": "ABC Corp", "experience": 3.5, doYouTOJob: true, "skills": ["JavaScript", "Node.js", "React"], whatTypeOfJobLookingFor: "Full-time", "preferredLocation": "Remote", "expectedSalary": 60000, "availableForRelocation": true}
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  userId String @unique // 1:1 relation with User
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("student_profiles")
+}
+
+enum GenderEnum {
+  MALE
+  FEMALE
+  OTHER
+}

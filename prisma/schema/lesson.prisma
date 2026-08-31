@@ -1,0 +1,22 @@
+model Lesson {
+  id           String         @id @default(uuid())
+  lessonNumber Int            @unique // Unique lesson number within the module
+  title        String
+  lessonType   LessonTypeEnum
+  videoUrl     String?
+  duration     Int?
+
+  moduleId String
+  module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@map("lessons")
+}
+
+enum LessonTypeEnum {
+  VIDEO
+  ARTICLE
+  QUIZ
+  ASSIGNMENT
+}

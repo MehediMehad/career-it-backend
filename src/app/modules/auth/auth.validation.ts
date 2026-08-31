@@ -27,7 +27,7 @@ export const registerSchema = z.object({
   image: z.string().url('Image must be a valid URL').optional(),
   email: z.string().email('Invalid email address').trim().toLowerCase(),
   password: passwordSchema,
-  role: z.nativeEnum(UserRoleEnum).default(UserRoleEnum.USER),
+  role: z.nativeEnum(UserRoleEnum).default(UserRoleEnum.STUDENT),
   deviceId: z.string().optional(),
   deviceName: z.string().optional(),
   deviceType: z.nativeEnum(DeviceType).optional(),
