@@ -16,10 +16,7 @@ const config = {
     email: getEnvVar('ADMIN_EMAIL'),
     password: getEnvVar('ADMIN_PASSWORD'),
   },
-  betterAuth: {
-    secret: getEnvVar('BETTER_AUTH_SECRET'),
-    url: getEnvVar('BETTER_AUTH_URL'),
-  },
+
   jwt: {
     access_secret: getEnvVar('JWT_ACCESS_SECRET'),
     access_expires_in: getEnvVar('JWT_ACCESS_EXPIRES_IN'),
