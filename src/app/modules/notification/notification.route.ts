@@ -9,7 +9,7 @@ const router = Router();
 
 router.post(
   '/fcm-token',
-  auth('STUDENT', 'INSTRUCTOR' ,'ADMIN'),
+  auth('STUDENT', 'INSTRUCTOR', 'ADMIN'),
   validateRequest(NotificationValidations.saveFcmTokenSchema),
   NotificationControllers.saveFcmToken,
 );
@@ -22,6 +22,10 @@ router.patch(
   NotificationControllers.markAllNotificationsAsRead,
 );
 
-router.patch('/:id/read', auth('STUDENT', 'INSTRUCTOR', 'ADMIN'), NotificationControllers.markNotificationAsRead);
+router.patch(
+  '/:id/read',
+  auth('STUDENT', 'INSTRUCTOR', 'ADMIN'),
+  NotificationControllers.markNotificationAsRead,
+);
 
 export const NotificationRoute = router;

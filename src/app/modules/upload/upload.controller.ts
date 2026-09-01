@@ -21,8 +21,6 @@ const getPresignedUrls = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   const result = await UploadServices.getPresignedUrls(userId, req.body);
 
-
-
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

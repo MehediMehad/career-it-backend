@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 import type { User, Device } from '@prisma/client';
-import { UserStatusEnum } from '@prisma/client';
+import { UserRoleEnum, UserStatusEnum } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import httpStatus from 'http-status';
 
@@ -21,6 +21,7 @@ import prisma from '../../libs/prisma';
 import { redis } from '../../libs/redis';
 import { queueEmail } from '../../queues/email.queue';
 import { queueNotification } from '../../queues/notification.queue';
+import { generateCustomId } from '../../utils/customId';
 import type { IDeviceInfo } from '../../utils/device';
 import { ForgotPasswordHtml } from '../../utils/email/ForgotPasswordHtml';
 import { SignUpVerificationHtml } from '../../utils/email/SignUpVerificationHtml';
@@ -42,13 +43,16 @@ const registerUser = async (payload: TRegisterPayload, deviceInfo: IDeviceInfo) 
   }
 
   const hashedPassword = await hash(payload.password, config.jwt.bcrypt_salt_rounds);
+  const role = payload.role || UserRoleEnum.STUDENT;
+  const customId = await generateCustomId(role);
 
   const user = await prisma.user.create({
     data: {
       name: payload.name,
+      customId,
       email: payload.email,
       password: hashedPassword,
-      role: payload.role || 'USER',
+      role,
       image: payload.image || '',
       status: UserStatusEnum.DEACTIVATE,
       isVerified: false,
@@ -142,6 +146,7 @@ const loginUser = async (payload: TLoginPayload, deviceInfo: IDeviceInfo) => {
 
     const tokens = generateAuthTokens({
       userId: user.id,
+      customId: user.customId,
       email: user.email,
       role: user.role,
       deviceId: updatedDevice.deviceId,
@@ -247,6 +252,7 @@ const loginUser = async (payload: TLoginPayload, deviceInfo: IDeviceInfo) => {
 
   const tokens = generateAuthTokens({
     userId: user.id,
+    customId: user.customId,
     email: user.email,
     role: user.role,
     deviceId: newDevice.deviceId,
@@ -349,6 +355,7 @@ const confirmPendingLogin = async (
 
   const tokens = generateAuthTokens({
     userId: user.id,
+    customId: user.customId,
     email: user.email,
     role: user.role,
     deviceId: newDevice.deviceId,
@@ -584,6 +591,7 @@ const refreshToken = async (refreshTokenStr: string) => {
 
   const tokens = generateAuthTokens({
     userId: user.id,
+    customId: user.customId,
     email: user.email,
     role: user.role,
     deviceId: verifiedToken.deviceId,

@@ -2,6 +2,7 @@ import type { Server as HttpServer } from 'http';
 
 import app from './app';
 import { getLocalIP } from './app/helpers/devHelpers';
+import seedSuperAdmin from './app/libs/seedSuperAdmin';
 import { initializeSocket } from './app/libs/socket';
 import config from './configs';
 
@@ -13,6 +14,7 @@ async function main() {
     const port = config.app.port || 5000;
     server = app.listen(port, async () => {
       console.log(`🚀 Server is running on port ${port}`);
+      await seedSuperAdmin(); // Seed Super Admin user on startup
       getLocalIP(); // 🖥️ Your PC's local IPv4 address(es)
 
       // Initialize Socket.IO

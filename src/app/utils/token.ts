@@ -6,6 +6,7 @@ import config from '../../configs';
 
 export interface ITokenPayload {
   userId: string;
+  customId: string;
   email: string;
   role: UserRoleEnum;
   deviceId?: string;

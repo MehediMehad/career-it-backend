@@ -7,6 +7,7 @@ import { Server as SocketServer } from 'socket.io';
 
 import prisma from './prisma';
 import config from '../../configs';
+import { verifyToken, type ITokenPayload } from '../utils/token';
 
 // Extend Socket.io Socket to include user info
 declare module 'socket.io' {
@@ -60,8 +61,7 @@ export function initializeSocket(httpServer: HttpServer) {
       // Remove "Bearer " prefix if present
       const cleanToken = token.replace('Bearer ', '');
 
-      // const decoded = authHelpers.verifyAccessToken(cleanToken); TODO: fix this
-      const decoded = { userId: '1' };
+      const decoded = verifyToken<ITokenPayload>(cleanToken, config.jwt.access_secret);
 
       // Look up the user from the database
       const user = await prisma.user.findUnique({

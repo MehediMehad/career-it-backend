@@ -1,6 +1,6 @@
 model User {
   id       String         @id @default(uuid())
-  customId String         @unique // ex: "STUDENT-1234" Or "INSTRUCTOR-1234"
+  customId String         @unique // ex: "STUDENT-0001" Or "INSTRUCTOR-0001" Or "ADMIN-0001"
   name     String
   image    String
   email    String         @unique
