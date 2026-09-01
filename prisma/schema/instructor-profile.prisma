@@ -9,6 +9,8 @@ model InstructorProfile {
   Education            String
   linkedinProfile      String?
   portfolioWebsiteLink String?
+  
+  adminApproved AdminApprovalStatus @default(PENDING)
 
   totalEarnings Decimal @default(0.00) @db.Decimal(10, 2)
   rating        Float   @default(0.0)
@@ -26,4 +28,10 @@ model InstructorProfile {
 
   @@index([userId])
   @@map("instructor_profiles")
+}
+
+enum AdminApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
