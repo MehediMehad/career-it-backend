@@ -7,7 +7,7 @@ model Module {
 
   // Relations
   courseId    String
-  milestoneId String @unique // 1:1 relation with Milestone
+  milestoneId String
 
   // Relations
   milestone Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)

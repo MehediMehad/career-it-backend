@@ -9,8 +9,8 @@ model Milestone {
   courseId String
 
   // Relations
-  course Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  module Module?
+  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  modules Module[]
 
   @@map("milestones")
 }

@@ -261,7 +261,7 @@ const getSingleCourse = async (id: string): Promise<Course> => {
       },
       milestones: {
         include: {
-          module: {
+          modules: {
             include: {
               lessons: true,
             },
