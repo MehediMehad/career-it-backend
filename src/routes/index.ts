@@ -22,6 +22,10 @@ const moduleRoutes = [
     route: CategoryRoutes,
   },
   {
+    path: '/instructor-profiles',
+    route: InstructorProfileRoutes,
+  },
+  {
     path: '/notifications',
     route: NotificationRoute,
   },
