@@ -18,12 +18,16 @@ const moduleRoutes = [
     route: AuthRoute,
   },
   {
-    path: '/categories',
-    route: CategoryRoutes,
-  },
-  {
     path: '/instructor-profiles',
     route: InstructorProfileRoutes,
+  },
+  {
+    path: '/student-profiles',
+    route: StudentProfileRoutes,
+  },
+  {
+    path: '/categories',
+    route: CategoryRoutes,
   },
   {
     path: '/notifications',
