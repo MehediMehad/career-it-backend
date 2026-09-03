@@ -33,14 +33,14 @@ const moduleRoutes = [
     path: '/courses',
     route: CourseRoutes,
   },
-  // {
-  //   path: '/milestones',
-  //   route: MilestoneRoutes,
-  // },
-  // {
-  //   path: '/modules',
-  //   route: ModuleRoutes,
-  // },
+  {
+    path: '/milestones',
+    route: MilestoneRoutes,
+  },
+  {
+    path: '/modules',
+    route: ModuleRoutes,
+  },
   {
     path: '/notifications',
     route: NotificationRoute,
