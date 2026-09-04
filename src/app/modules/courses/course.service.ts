@@ -60,6 +60,7 @@ const createCourse = async (
   const result = await prisma.$transaction(async (tx) => {
     const newCourse = await tx.course.create({
       data: {
+        image: payload.image,
         title: payload.title,
         description: payload.description,
         about: payload.about,

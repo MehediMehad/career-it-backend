@@ -2,6 +2,7 @@ import { CourseLevelEnum } from '@prisma/client';
 import { z } from 'zod';
 
 const createCourseSchema = z.object({
+  image: z.string().min(1, 'Image is required'),
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
   about: z.string().min(1, 'About section is required'),
@@ -10,12 +11,13 @@ const createCourseSchema = z.object({
   requirements: z.array(z.string()).default([]),
   learningOutcomes: z.array(z.string()).default([]),
   categoryId: z.string().min(1, 'Category ID is required'),
-  instructorProfileId: z.string().optional(),
+  instructorProfileId: z.string(),
   isPublished: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
 });
 
 const updateCourseSchema = z.object({
+  image: z.string().optional(),
   title: z.string().min(1).optional(),
   description: z.string().optional(),
   about: z.string().optional(),

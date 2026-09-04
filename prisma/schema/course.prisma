@@ -1,6 +1,7 @@
 model Course {
   id               String          @id @default(uuid())
   title            String
+  image            String
   description      String
   about            String
   price            Decimal         @default(0.00) @db.Decimal(10, 2)

@@ -13,6 +13,7 @@ export interface ICourseFilterRequest {
 }
 
 export interface ICreateCourse {
+  image: string;
   title: string;
   description: string;
   about: string;
@@ -27,6 +28,7 @@ export interface ICreateCourse {
 }
 
 export interface IUpdateCourse {
+  image?: string;
   title?: string;
   description?: string;
   about?: string;
