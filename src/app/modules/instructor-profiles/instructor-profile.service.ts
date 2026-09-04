@@ -130,9 +130,8 @@ const getMyProfile = async (userId: string): Promise<InstructorProfile> => {
 const getAllInstructorProfiles = async (
   filters: IInstructorProfileFilterRequest,
   options: IPaginationOptions,
-  isAdmin = false,
 ) => {
-  const cacheKey = `instructor_profiles:all:${isAdmin}:${JSON.stringify(filters)}:${JSON.stringify(options)}`;
+  const cacheKey = `instructor_profiles:all:${JSON.stringify(filters)}:${JSON.stringify(options)}`;
 
   try {
     const cachedData = await redis.get(cacheKey);
@@ -147,12 +146,6 @@ const getAllInstructorProfiles = async (
   const { searchTerm, adminApproved, ...filterData } = filters;
 
   const andConditions: Prisma.InstructorProfileWhereInput[] = [];
-
-  if (!isAdmin) {
-    andConditions.push({ adminApproved: 'APPROVED' as AdminApprovalStatus });
-  } else if (adminApproved) {
-    andConditions.push({ adminApproved });
-  }
 
   if (searchTerm) {
     andConditions.push({
@@ -223,6 +216,8 @@ const getAllInstructorProfiles = async (
   } catch (error) {
     console.error('Redis write error:', error);
   }
+
+
 
   return response;
 };

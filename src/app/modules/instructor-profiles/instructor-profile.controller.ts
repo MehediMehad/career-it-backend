@@ -34,12 +34,10 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
 const getAllInstructorProfiles = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, ['searchTerm', 'adminApproved']);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
-  const isAdmin = req.user?.role === UserRoleEnum.ADMIN;
 
   const result = await InstructorProfileServices.getAllInstructorProfiles(
     filters,
     options,
-    isAdmin,
   );
 
   sendResponse(res, {
