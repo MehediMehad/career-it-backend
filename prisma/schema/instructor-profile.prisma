@@ -6,7 +6,7 @@ model InstructorProfile {
   headline             String
   expertiseArea        String[]
   yearsOfExperience    Int
-  Education            String
+  education            String
   linkedinProfile      String?
   portfolioWebsiteLink String?
   

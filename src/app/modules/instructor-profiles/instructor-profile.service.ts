@@ -11,6 +11,8 @@ import { paginationHelper } from '../../helpers/paginationHelper';
 import type { IPaginationOptions } from '../../interface/pagination.type';
 import prisma from '../../libs/prisma';
 import { redis } from '../../libs/redis';
+import { queueEmail } from '../../queues/email.queue';
+import { InstructorStatusUpdateHtml } from '../../utils/email/InstructorStatusUpdateHtml';
 
 const clearInstructorCache = async () => {
   try {
@@ -35,13 +37,17 @@ const upsertMyProfile = async (
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
 
+  const userUpdateData: Prisma.UserUpdateInput = {};
+  if (payload.name) userUpdateData.name = payload.name;
+  if (payload.image !== undefined) userUpdateData.image = payload.image;
+
   const profileData: Prisma.InstructorProfileCreateInput = {
     user: { connect: { id: userId } },
     bio: payload.bio,
     headline: payload.headline,
     expertiseArea: payload.expertiseArea,
     yearsOfExperience: payload.yearsOfExperience,
-    Education: payload.Education,
+    education: payload.education,
     linkedinProfile: payload.linkedinProfile,
     portfolioWebsiteLink: payload.portfolioWebsiteLink,
   };
@@ -51,29 +57,40 @@ const upsertMyProfile = async (
     headline: payload.headline,
     expertiseArea: payload.expertiseArea,
     yearsOfExperience: payload.yearsOfExperience,
-    Education: payload.Education,
+    education: payload.education,
     linkedinProfile: payload.linkedinProfile,
     portfolioWebsiteLink: payload.portfolioWebsiteLink,
   };
 
-  const result = await prisma.instructorProfile.upsert({
-    where: { userId },
-    create: profileData,
-    update: updateData,
-    include: {
-      user: {
-        select: {
-          id: true,
-          customId: true,
-          name: true,
-          email: true,
-          image: true,
-          role: true,
-          status: true,
-          isVerified: true,
+  const result = await prisma.$transaction(async (tx) => {
+    if (Object.keys(userUpdateData).length > 0) {
+      await tx.user.update({
+        where: { id: userId },
+        data: userUpdateData,
+      });
+    }
+
+    const upserted = await tx.instructorProfile.upsert({
+      where: { userId },
+      create: profileData,
+      update: updateData,
+      include: {
+        user: {
+          select: {
+            id: true,
+            customId: true,
+            name: true,
+            email: true,
+            image: true,
+            role: true,
+            status: true,
+            isVerified: true,
+          },
         },
       },
-    },
+    });
+
+    return upserted;
   });
 
   await clearInstructorCache();
@@ -142,7 +159,7 @@ const getAllInstructorProfiles = async (
       OR: [
         { headline: { contains: searchTerm, mode: 'insensitive' } },
         { bio: { contains: searchTerm, mode: 'insensitive' } },
-        { Education: { contains: searchTerm, mode: 'insensitive' } },
+        { education: { contains: searchTerm, mode: 'insensitive' } },
         { expertiseArea: { hasSome: [searchTerm] } },
         { user: { name: { contains: searchTerm, mode: 'insensitive' } } },
         { user: { email: { contains: searchTerm, mode: 'insensitive' } } },
@@ -275,9 +292,76 @@ const updateInstructorProfile = async (
     throw new ApiError(httpStatus.NOT_FOUND, 'Instructor profile not found');
   }
 
+  const { name, image, ...profilePayload } = payload;
+
+  const userUpdateData: Prisma.UserUpdateInput = {};
+  if (name) userUpdateData.name = name;
+  if (image !== undefined) userUpdateData.image = image;
+
+  const result = await prisma.$transaction(async (tx) => {
+    if (Object.keys(userUpdateData).length > 0) {
+      await tx.user.update({
+        where: { id: existingProfile.userId },
+        data: userUpdateData,
+      });
+    }
+
+    const updated = await tx.instructorProfile.update({
+      where: { id: existingProfile.id },
+      data: profilePayload,
+      include: {
+        user: {
+          select: {
+            id: true,
+            customId: true,
+            name: true,
+            email: true,
+            image: true,
+            role: true,
+            status: true,
+            isVerified: true,
+          },
+        },
+      },
+    });
+
+    return updated;
+  });
+
+  await clearInstructorCache();
+
+  return result;
+};
+
+const updateAdminApprovalStatus = async (
+  id: string,
+  adminApproved: AdminApprovalStatus,
+): Promise<InstructorProfile> => {
+  const existingProfile = await prisma.instructorProfile.findUnique({
+    where: { id },
+    include: {
+      user: {
+        select: {
+          id: true,
+          customId: true,
+          name: true,
+          email: true,
+          image: true,
+          role: true,
+          status: true,
+          isVerified: true,
+        },
+      },
+    },
+  });
+
+  if (!existingProfile) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Instructor profile not found');
+  }
+
   const result = await prisma.instructorProfile.update({
-    where: { id: existingProfile.id },
-    data: payload,
+    where: { id },
+    data: { adminApproved },
     include: {
       user: {
         select: {
@@ -296,27 +380,14 @@ const updateInstructorProfile = async (
 
   await clearInstructorCache();
 
-  return result;
-};
-
-const updateAdminApprovalStatus = async (
-  id: string,
-  adminApproved: AdminApprovalStatus,
-): Promise<InstructorProfile> => {
-  const existingProfile = await prisma.instructorProfile.findUnique({
-    where: { id },
-  });
-
-  if (!existingProfile) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Instructor profile not found');
+  // Send asynchronous notification email via BullMQ Queue using standalone HTML template
+  if (existingProfile.user?.email) {
+    queueEmail({
+      to: existingProfile.user.email,
+      subject: `Career IT - Instructor Account Status Updated (${adminApproved})`,
+      html: InstructorStatusUpdateHtml(existingProfile.user.name, adminApproved),
+    }).catch((error) => console.error('Failed to dispatch BullMQ email job:', error));
   }
-
-  const result = await prisma.instructorProfile.update({
-    where: { id },
-    data: { adminApproved },
-  });
-
-  await clearInstructorCache();
 
   return result;
 };

@@ -2,7 +2,7 @@ model User {
   id       String         @id @default(uuid())
   customId String         @unique // ex: "STUDENT-0001" Or "INSTRUCTOR-0001" Or "ADMIN-0001"
   name     String
-  image    String
+  image    String?
   email    String         @unique
   password String
   role     UserRoleEnum   @default(STUDENT)
