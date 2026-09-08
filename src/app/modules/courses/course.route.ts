@@ -4,6 +4,7 @@ import express from 'express';
 import { CourseControllers } from './course.controller';
 import { CourseValidations } from './course.validation';
 import auth from '../../middlewares/auth';
+import optionalAuth from '../../middlewares/optionalAuth';
 import validateRequest from '../../middlewares/validateRequest';
 
 const router = express.Router();
@@ -15,9 +16,9 @@ router.post(
   CourseControllers.createCourse,
 );
 
-router.get('/', CourseControllers.getAllCourses);
+router.get('/', optionalAuth, CourseControllers.getAllCourses);
 
-router.get('/:id', CourseControllers.getSingleCourse);
+router.get('/:id', optionalAuth, CourseControllers.getSingleCourse);
 
 router.patch(
   '/:id',
