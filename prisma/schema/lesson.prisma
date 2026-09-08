@@ -1,16 +1,20 @@
 model Lesson {
-  id           String         @id @default(uuid())
-  lessonNumber Int            @unique // Unique lesson number within the module
-  title        String
-  lessonType   LessonTypeEnum
-  videoUrl     String?
-  duration     Int?
+  id            String             @id @default(uuid())
+  lessonNumber  Int // Unique lesson number within the module
+  title         String
+  lessonType    LessonTypeEnum
+  videoProvider VideoProviderEnum? @default(S3)
+  videoKey      String? // S3 object key (for private S3 direct uploads)
+  videoUrl      String? // External URL (e.g. YouTube, Vimeo)
+  duration      Int? // Duration in seconds
+  isFreePreview Boolean            @default(false)
 
   moduleId String
   module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
+  @@unique([moduleId, lessonNumber])
   @@map("lessons")
 }
 
@@ -19,4 +23,11 @@ enum LessonTypeEnum {
   ARTICLE
   QUIZ
   ASSIGNMENT
+}
+
+enum VideoProviderEnum {
+  S3
+  YOUTUBE
+  VIMEO
+  EXTERNAL
 }

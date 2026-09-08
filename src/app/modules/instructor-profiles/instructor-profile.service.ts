@@ -217,8 +217,6 @@ const getAllInstructorProfiles = async (
     console.error('Redis write error:', error);
   }
 
-
-
   return response;
 };
 

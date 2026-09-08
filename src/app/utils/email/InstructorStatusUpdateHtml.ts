@@ -1,9 +1,6 @@
 import type { AdminApprovalStatus } from '@prisma/client';
 
-export const InstructorStatusUpdateHtml = (
-  userName: string,
-  status: AdminApprovalStatus,
-) => {
+export const InstructorStatusUpdateHtml = (userName: string, status: AdminApprovalStatus) => {
   const isApproved = status === 'APPROVED';
   const isRejected = status === 'REJECTED';
 
@@ -71,7 +68,7 @@ export const InstructorStatusUpdateHtml = (
             </div>
             `
               : isRejected
-              ? `
+                ? `
             <p style="color: #334155; font-size: 15px; line-height: 1.6;">
               We regret to inform you that your application to become an instructor on Career IT has not been approved at this time.
             </p>
@@ -79,7 +76,7 @@ export const InstructorStatusUpdateHtml = (
               If you believe this decision was made in error or would like to update your credentials, please feel free to reach out to our support team.
             </p>
             `
-              : `
+                : `
             <p style="color: #334155; font-size: 15px; line-height: 1.6;">
               Your instructor application is currently under review. Our team will notify you once a decision has been made.
             </p>

@@ -3,6 +3,8 @@ import {
   UploadPartCommand,
   CompleteMultipartUploadCommand,
   AbortMultipartUploadCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
   type CompletedPart,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -48,6 +50,7 @@ export const s3MultipartHelper = {
       PartNumber: partNumber,
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return await getSignedUrl(s3Client as any, command as any, { expiresIn: 3600 });
   },
 
@@ -89,5 +92,35 @@ export const s3MultipartHelper = {
     });
 
     await s3Client.send(command);
+  },
+
+  /**
+   * Generates a time-limited Presigned GET URL for streaming/viewing private S3 objects.
+   * Default expiration is 10 minutes (600 seconds).
+   */
+  async generatePresignedGetUrl(fileKey: string, expiresIn = 600) {
+    const command = new GetObjectCommand({
+      Bucket: config.s3.bucket,
+      Key: fileKey,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return await getSignedUrl(s3Client as any, command as any, { expiresIn });
+  },
+
+  /**
+   * Deletes a file object from S3 storage.
+   */
+  async deleteObject(fileKey: string) {
+    try {
+      const command = new DeleteObjectCommand({
+        Bucket: config.s3.bucket,
+        Key: fileKey,
+      });
+
+      await s3Client.send(command);
+    } catch (error) {
+      console.warn(`Failed to delete S3 object with key ${fileKey}:`, error);
+    }
   },
 };

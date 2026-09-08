@@ -4,6 +4,7 @@ import { AuthRoute } from '../app/modules/auth/auth.route';
 import { CategoryRoutes } from '../app/modules/categories/category.route';
 import { CourseRoutes } from '../app/modules/courses/course.route';
 import { InstructorProfileRoutes } from '../app/modules/instructor-profiles/instructor-profile.route';
+import { LessonRoutes } from '../app/modules/lessons/lesson.route';
 import { MilestoneRoutes } from '../app/modules/milestones/milestone.route';
 import { ModuleRoutes } from '../app/modules/modules/module.route';
 import { NotificationRoute } from '../app/modules/notification/notification.route';
@@ -40,6 +41,10 @@ const moduleRoutes = [
   {
     path: '/modules',
     route: ModuleRoutes,
+  },
+  {
+    path: '/lessons',
+    route: LessonRoutes,
   },
   {
     path: '/notifications',

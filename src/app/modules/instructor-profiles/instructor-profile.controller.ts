@@ -35,10 +35,7 @@ const getAllInstructorProfiles = catchAsync(async (req: Request, res: Response) 
   const filters = pick(req.query, ['searchTerm', 'adminApproved']);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
 
-  const result = await InstructorProfileServices.getAllInstructorProfiles(
-    filters,
-    options,
-  );
+  const result = await InstructorProfileServices.getAllInstructorProfiles(filters, options);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
