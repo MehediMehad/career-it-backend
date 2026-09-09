@@ -261,10 +261,20 @@ const getSingleCourse = async (id: string): Promise<Course> => {
         },
       },
       milestones: {
+        orderBy: {
+          milestoneNumber: 'asc',
+        },
         include: {
           modules: {
+            orderBy: {
+              moduleNumber: 'asc',
+            },
             include: {
-              lessons: true,
+              lessons: {
+                orderBy: {
+                  lessonNumber: 'asc',
+                },
+              },
             },
           },
         },

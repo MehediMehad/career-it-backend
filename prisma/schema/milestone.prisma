@@ -1,5 +1,6 @@
 model Milestone {
   id          String   @id @default(uuid())
+  milestoneNumber Int
   title       String
   subtitle    String
   moduleCount Int      @default(0)
@@ -11,6 +12,7 @@ model Milestone {
   // Relations
   course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   modules Module[]
-
+  
+  @@index([courseId, milestoneNumber], name: "milestone_courseId_milestoneNumber_idx")
   @@map("milestones")
 }

@@ -48,8 +48,17 @@ const createMilestone = async (
     }
   }
 
+  const milestoneCount = await prisma.milestone.count({
+    where: { courseId: payload.courseId },
+  });
+
+  const milestoneNumber = payload.milestoneNumber ?? milestoneCount + 1;
+
   const result = await prisma.milestone.create({
-    data: payload,
+    data: {
+      ...payload,
+      milestoneNumber,
+    },
     include: {
       course: {
         select: {
@@ -111,7 +120,7 @@ const getAllMilestones = async (filters: IMilestoneFilterRequest, options: IPagi
     skip,
     take: limit,
     orderBy: {
-      [sortBy]: sortOrder,
+      [sortBy || 'milestoneNumber']: sortOrder || 'asc',
     },
     include: {
       course: {
@@ -120,7 +129,18 @@ const getAllMilestones = async (filters: IMilestoneFilterRequest, options: IPagi
           title: true,
         },
       },
-      modules: true,
+      modules: {
+        orderBy: {
+          moduleNumber: 'asc',
+        },
+        include: {
+          lessons: {
+            orderBy: {
+              lessonNumber: 'asc',
+            },
+          },
+        },
+      },
     },
   });
 
