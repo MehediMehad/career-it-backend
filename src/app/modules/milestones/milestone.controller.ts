@@ -68,10 +68,22 @@ const deleteMilestone = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const reorderMilestones = catchAsync(async (req: Request, res: Response) => {
+  const result = await MilestoneServices.reorderMilestones(req.user, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Milestones reordered successfully',
+    data: result,
+  });
+});
+
 export const MilestoneControllers = {
   createMilestone,
   getAllMilestones,
   getSingleMilestone,
   updateMilestone,
   deleteMilestone,
+  reorderMilestones,
 };

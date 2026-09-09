@@ -27,7 +27,15 @@ router.get('/:id/playback', optionalAuth, LessonControllers.getLessonPlayback);
 // 4. Get Single Lesson Details
 router.get('/:id', LessonControllers.getSingleLesson);
 
-// 5. Update Lesson (Instructor or Admin)
+// 5. Reorder Lessons in a Module (Instructor or Admin)
+router.patch(
+  '/reorder',
+  auth(UserRoleEnum.INSTRUCTOR, UserRoleEnum.ADMIN),
+  validateRequest(LessonValidations.reorderLessonsSchema),
+  LessonControllers.reorderLessons,
+);
+
+// 6. Update Lesson (Instructor or Admin)
 router.patch(
   '/:id',
   auth(UserRoleEnum.INSTRUCTOR, UserRoleEnum.ADMIN),

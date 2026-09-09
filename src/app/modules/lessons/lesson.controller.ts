@@ -83,6 +83,17 @@ const getLessonPlayback = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const reorderLessons = catchAsync(async (req: Request, res: Response) => {
+  const result = await LessonServices.reorderLessons(req.user, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Lessons reordered successfully',
+    data: result,
+  });
+});
+
 export const LessonControllers = {
   createLesson,
   getAllLessonsByModule,
@@ -90,5 +101,6 @@ export const LessonControllers = {
   updateLesson,
   deleteLesson,
   getLessonPlayback,
+  reorderLessons,
 };
 

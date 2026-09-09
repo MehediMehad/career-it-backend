@@ -2,7 +2,12 @@ import type { Module, Prisma } from '@prisma/client';
 import { UserRoleEnum } from '@prisma/client';
 import httpStatus from 'http-status';
 
-import type { ICreateModule, IModuleFilterRequest, IUpdateModule } from './module.interface';
+import type {
+  ICreateModule,
+  IModuleFilterRequest,
+  IReorderModulesPayload,
+  IUpdateModule,
+} from './module.interface';
 import ApiError from '../../errors/ApiError';
 import { paginationHelper } from '../../helpers/paginationHelper';
 import type { TAccessTokenPayload } from '../../interface';
@@ -296,10 +301,63 @@ const deleteModule = async (userPayload: TAccessTokenPayload, id: string): Promi
   return result;
 };
 
+const reorderModules = async (
+  userPayload: TAccessTokenPayload,
+  payload: IReorderModulesPayload,
+): Promise<{ success: boolean; count: number }> => {
+  const { courseId, milestoneId, items } = payload;
+
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    include: { instructorProfile: true },
+  });
+
+  if (!course || course.isDeleted) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Course not found');
+  }
+
+  if (userPayload.role === UserRoleEnum.INSTRUCTOR) {
+    if (course.instructorProfile.userId !== userPayload.userId) {
+      throw new ApiError(httpStatus.FORBIDDEN, 'You can only reorder modules in your own course');
+    }
+  }
+
+  const milestone = await prisma.milestone.findUnique({
+    where: { id: milestoneId },
+  });
+
+  if (!milestone) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Milestone not found');
+  }
+
+  await prisma.$transaction(async (tx) => {
+    // Phase 1: Set temporary negative moduleNumbers to prevent unique constraint conflicts
+    for (let i = 0; i < items.length; i++) {
+      await tx.module.update({
+        where: { id: items[i].id },
+        data: { moduleNumber: -(i + 1) },
+      });
+    }
+
+    // Phase 2: Set target moduleNumbers
+    for (const item of items) {
+      await tx.module.update({
+        where: { id: item.id },
+        data: { moduleNumber: item.moduleNumber },
+      });
+    }
+  });
+
+  await clearModuleCache();
+
+  return { success: true, count: items.length };
+};
+
 export const ModuleServices = {
   createModule,
   getAllModules,
   getSingleModule,
   updateModule,
   deleteModule,
+  reorderModules,
 };

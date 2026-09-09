@@ -16,3 +16,13 @@ export interface IUpdateMilestone {
   subtitle?: string;
   courseId?: string;
 }
+
+export interface IReorderMilestoneItem {
+  id: string;
+  milestoneNumber: number;
+}
+
+export interface IReorderMilestonesPayload {
+  courseId: string;
+  items: IReorderMilestoneItem[];
+}

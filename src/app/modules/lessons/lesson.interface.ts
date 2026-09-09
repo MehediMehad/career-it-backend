@@ -37,3 +37,13 @@ export interface ILessonPlaybackResponse {
   expiresAt?: string;
 }
 
+export interface IReorderLessonItem {
+  id: string;
+  lessonNumber: number;
+}
+
+export interface IReorderLessonsPayload {
+  moduleId: string;
+  items: IReorderLessonItem[];
+}
+

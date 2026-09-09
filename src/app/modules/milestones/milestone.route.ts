@@ -20,6 +20,13 @@ router.get('/', MilestoneControllers.getAllMilestones);
 router.get('/:id', MilestoneControllers.getSingleMilestone);
 
 router.patch(
+  '/reorder',
+  auth(UserRoleEnum.INSTRUCTOR, UserRoleEnum.ADMIN),
+  validateRequest(MilestoneValidations.reorderMilestonesSchema),
+  MilestoneControllers.reorderMilestones,
+);
+
+router.patch(
   '/:id',
   auth(UserRoleEnum.INSTRUCTOR, UserRoleEnum.ADMIN),
   validateRequest(MilestoneValidations.updateMilestoneSchema),

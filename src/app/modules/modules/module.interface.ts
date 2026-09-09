@@ -17,3 +17,14 @@ export interface IUpdateModule {
   courseId?: string;
   milestoneId?: string;
 }
+
+export interface IReorderModuleItem {
+  id: string;
+  moduleNumber: number;
+}
+
+export interface IReorderModulesPayload {
+  courseId: string;
+  milestoneId: string;
+  items: IReorderModuleItem[];
+}

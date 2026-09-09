@@ -7,6 +7,7 @@ import type {
   ICreateLesson,
   ILessonFilterRequest,
   ILessonPlaybackResponse,
+  IReorderLessonsPayload,
   IUpdateLesson,
 } from './lesson.interface';
 import ApiError from '../../errors/ApiError';
@@ -510,6 +511,50 @@ const getLessonPlayback = async (
   return responseData;
 };
 
+const reorderLessons = async (
+  userPayload: TAccessTokenPayload,
+  payload: IReorderLessonsPayload,
+): Promise<{ success: boolean; count: number }> => {
+  const { moduleId, items } = payload;
+
+  const moduleItem = await prisma.module.findUnique({
+    where: { id: moduleId },
+    include: { course: { include: { instructorProfile: true } } },
+  });
+
+  if (!moduleItem) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Module not found');
+  }
+
+  if (userPayload.role === UserRoleEnum.INSTRUCTOR) {
+    if (moduleItem.course.instructorProfile.userId !== userPayload.userId) {
+      throw new ApiError(httpStatus.FORBIDDEN, 'You can only reorder lessons in your own module');
+    }
+  }
+
+  await prisma.$transaction(async (tx) => {
+    // Phase 1: Set temporary negative lessonNumbers to prevent @@unique([moduleId, lessonNumber]) collision
+    for (let i = 0; i < items.length; i++) {
+      await tx.lesson.update({
+        where: { id: items[i].id },
+        data: { lessonNumber: -(i + 1) },
+      });
+    }
+
+    // Phase 2: Set final target lesson numbers
+    for (const item of items) {
+      await tx.lesson.update({
+        where: { id: item.id },
+        data: { lessonNumber: item.lessonNumber },
+      });
+    }
+  });
+
+  await clearLessonCache(moduleId, moduleItem.courseId);
+
+  return { success: true, count: items.length };
+};
+
 export const LessonServices = {
   createLesson,
   getAllLessonsByModule,
@@ -517,4 +562,5 @@ export const LessonServices = {
   updateLesson,
   deleteLesson,
   getLessonPlayback,
+  reorderLessons,
 };

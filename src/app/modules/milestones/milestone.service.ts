@@ -5,6 +5,7 @@ import httpStatus from 'http-status';
 import type {
   ICreateMilestone,
   IMilestoneFilterRequest,
+  IReorderMilestonesPayload,
   IUpdateMilestone,
 } from './milestone.interface';
 import ApiError from '../../errors/ApiError';
@@ -276,10 +277,55 @@ const deleteMilestone = async (
   return result;
 };
 
+const reorderMilestones = async (
+  userPayload: TAccessTokenPayload,
+  payload: IReorderMilestonesPayload,
+): Promise<{ success: boolean; count: number }> => {
+  const { courseId, items } = payload;
+
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    include: { instructorProfile: true },
+  });
+
+  if (!course || course.isDeleted) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Course not found');
+  }
+
+  if (userPayload.role === UserRoleEnum.INSTRUCTOR) {
+    if (course.instructorProfile.userId !== userPayload.userId) {
+      throw new ApiError(httpStatus.FORBIDDEN, 'You can only reorder milestones of your own course');
+    }
+  }
+
+  await prisma.$transaction(async (tx) => {
+    // Phase 1: Set temporary negative milestoneNumbers to prevent collision
+    for (let i = 0; i < items.length; i++) {
+      await tx.milestone.update({
+        where: { id: items[i].id },
+        data: { milestoneNumber: -(i + 1) },
+      });
+    }
+
+    // Phase 2: Set final milestone numbers
+    for (const item of items) {
+      await tx.milestone.update({
+        where: { id: item.id },
+        data: { milestoneNumber: item.milestoneNumber },
+      });
+    }
+  });
+
+  await clearMilestoneCache();
+
+  return { success: true, count: items.length };
+};
+
 export const MilestoneServices = {
   createMilestone,
   getAllMilestones,
   getSingleMilestone,
   updateMilestone,
   deleteMilestone,
+  reorderMilestones,
 };

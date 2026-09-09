@@ -20,6 +20,13 @@ router.get('/', ModuleControllers.getAllModules);
 router.get('/:id', ModuleControllers.getSingleModule);
 
 router.patch(
+  '/reorder',
+  auth(UserRoleEnum.INSTRUCTOR, UserRoleEnum.ADMIN),
+  validateRequest(ModuleValidations.reorderModulesSchema),
+  ModuleControllers.reorderModules,
+);
+
+router.patch(
   '/:id',
   auth(UserRoleEnum.INSTRUCTOR, UserRoleEnum.ADMIN),
   validateRequest(ModuleValidations.updateModuleSchema),

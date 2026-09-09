@@ -68,10 +68,22 @@ const deleteModule = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const reorderModules = catchAsync(async (req: Request, res: Response) => {
+  const result = await ModuleServices.reorderModules(req.user, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Modules reordered successfully',
+    data: result,
+  });
+});
+
 export const ModuleControllers = {
   createModule,
   getAllModules,
   getSingleModule,
   updateModule,
   deleteModule,
+  reorderModules,
 };
