@@ -43,8 +43,11 @@ app.use(
 app.use((req: Request, res: Response, next: NextFunction) => {
   const contentType = req.headers['content-type'] || '';
   if (!contentType.includes('multipart/form-data')) {
-    express.json({ limit: '10mb' })(req, res, () => {
-      express.urlencoded({ extended: true })(req, res, next);
+    express.json({ limit: '50mb' })(req, res, (err) => {
+      if (err) {
+        return next(err);
+      }
+      express.urlencoded({ extended: true, limit: '50mb' })(req, res, next);
     });
   } else {
     next(); // skip body parser for file upload
