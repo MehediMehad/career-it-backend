@@ -44,8 +44,8 @@ const getAllCourses = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleCourse = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const result = await CourseServices.getSingleCourse(id);
+  const idOrSlug = (req.params as any).idOrSlug || req.params.id;
+  const result = await CourseServices.getSingleCourse(idOrSlug);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

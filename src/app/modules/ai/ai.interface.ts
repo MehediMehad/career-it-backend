@@ -5,6 +5,7 @@ export interface IChatMessage {
 
 export interface ISuggestedCourse {
   id: string;
+  slug: string;
   title: string;
   price: number;
   level: string;

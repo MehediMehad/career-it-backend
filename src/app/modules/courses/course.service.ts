@@ -9,6 +9,7 @@ import type { TAccessTokenPayload } from '../../interface';
 import type { IPaginationOptions } from '../../interface/pagination.type';
 import prisma from '../../libs/prisma';
 import { redis } from '../../libs/redis';
+import { slugify } from '../../utils/stringUtils';
 
 const clearCourseCache = async () => {
   try {
@@ -59,12 +60,21 @@ const createCourse = async (
     throw new ApiError(httpStatus.NOT_FOUND, 'Category not found');
   }
 
+  // Generate unique slug
+  const baseSlug = payload.slug ? slugify(payload.slug) : slugify(payload.title);
+  let courseSlug = baseSlug;
+  const existingCourseSlug = await prisma.course.findFirst({ where: { slug: courseSlug } });
+  if (existingCourseSlug) {
+    courseSlug = `${baseSlug}-${Date.now().toString().slice(-4)}`;
+  }
+
   // Transaction to create course and update category courseCount
   const result = await prisma.$transaction(async (tx) => {
     const newCourse = await tx.course.create({
       data: {
         image: payload.image,
         title: payload.title,
+        slug: courseSlug,
         description: payload.description,
         about: payload.about,
         price: payload.price ?? 0.0,
@@ -235,8 +245,8 @@ const getAllCourses = async (
   return response;
 };
 
-const getSingleCourse = async (id: string): Promise<Course> => {
-  const cacheKey = `courses:single:${id}`;
+const getSingleCourse = async (idOrSlug: string): Promise<Course> => {
+  const cacheKey = `courses:single:${idOrSlug}`;
 
   try {
     const cachedData = await redis.get(cacheKey);
@@ -247,8 +257,11 @@ const getSingleCourse = async (id: string): Promise<Course> => {
     console.error('Redis read error:', error);
   }
 
-  const result = await prisma.course.findUnique({
-    where: { id },
+  const result = await prisma.course.findFirst({
+    where: {
+      OR: [{ id: idOrSlug }, { slug: idOrSlug }],
+      isDeleted: false,
+    },
     include: {
       category: true,
       instructorProfile: {

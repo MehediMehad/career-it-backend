@@ -122,7 +122,7 @@ Course Overview: ${course.description}
 About Specialization: ${course.about}
 Prerequisites & Requirements: ${requirements}
 What you will learn & Outcomes: ${outcomes}
-Course Link: /courses/${course.id}`;
+Course Link: /courses/${course.slug}`;
 
     knowledgeItems.push({
       courseId: course.id,
@@ -261,6 +261,7 @@ export const chatWithCounselor = async (
     where: { isPublished: true, isDeleted: false },
     select: {
       id: true,
+      slug: true,
       title: true,
       price: true,
       level: true,
@@ -323,6 +324,7 @@ ${contextText}
         .filter((c) => matchedCourseIds.has(c.id))
         .map((c) => ({
           id: c.id,
+          slug: c.slug,
           title: c.title,
           price: Number(c.price),
           level: c.level,
@@ -334,6 +336,7 @@ ${contextText}
     if (!suggestedCourses.length && publishedCourses.length > 0) {
       suggestedCourses = publishedCourses.slice(0, 2).map((c) => ({
         id: c.id,
+        slug: c.slug,
         title: c.title,
         price: Number(c.price),
         level: c.level,

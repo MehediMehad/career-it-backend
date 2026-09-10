@@ -4,6 +4,7 @@ import { z } from 'zod';
 const createCourseSchema = z.object({
   image: z.string().min(1, 'Image is required'),
   title: z.string().min(1, 'Title is required'),
+  slug: z.string().min(1, 'Slug is required'),
   description: z.string().min(1, 'Description is required'),
   about: z.string().min(1, 'About section is required'),
   price: z.number().min(0).default(0.0),
@@ -19,6 +20,7 @@ const createCourseSchema = z.object({
 const updateCourseSchema = z.object({
   image: z.string().optional(),
   title: z.string().min(1).optional(),
+  slug: z.string().optional(),
   description: z.string().optional(),
   about: z.string().optional(),
   price: z.number().min(0).optional(),

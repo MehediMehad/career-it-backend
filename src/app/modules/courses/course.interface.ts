@@ -10,11 +10,13 @@ export interface ICourseFilterRequest {
   isDeleted?: string | boolean;
   minPrice?: string | number;
   maxPrice?: string | number;
+  slug?: string;
 }
 
 export interface ICreateCourse {
   image: string;
   title: string;
+  slug: string;
   description: string;
   about: string;
   price?: number;
@@ -30,6 +32,7 @@ export interface ICreateCourse {
 export interface IUpdateCourse {
   image?: string;
   title?: string;
+  slug?: string;
   description?: string;
   about?: string;
   price?: number;
