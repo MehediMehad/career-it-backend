@@ -13,12 +13,15 @@ import { redis } from '../../libs/redis';
 const clearCourseCache = async () => {
   try {
     const courseKeys = await redis.keys('courses:*');
-    if (courseKeys.length > 0) {
-      await redis.del(...courseKeys);
-    }
     const categoryKeys = await redis.keys('categories:*');
-    if (categoryKeys.length > 0) {
-      await redis.del(...categoryKeys);
+    const milestoneKeys = await redis.keys('milestones:*');
+    const moduleKeys = await redis.keys('modules:*');
+    const lessonKeys = await redis.keys('lessons:*');
+
+    const allKeys = [...courseKeys, ...categoryKeys, ...milestoneKeys, ...moduleKeys, ...lessonKeys];
+    if (allKeys.length > 0) {
+      const uniqueKeys = [...new Set(allKeys)];
+      await redis.del(...uniqueKeys);
     }
   } catch (error) {
     console.error('Redis clear course cache error:', error);

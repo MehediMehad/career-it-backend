@@ -18,12 +18,14 @@ import { redis } from '../../libs/redis';
 const clearMilestoneCache = async () => {
   try {
     const milestoneKeys = await redis.keys('milestones:*');
-    if (milestoneKeys.length > 0) {
-      await redis.del(...milestoneKeys);
-    }
+    const moduleKeys = await redis.keys('modules:*');
     const courseKeys = await redis.keys('courses:*');
-    if (courseKeys.length > 0) {
-      await redis.del(...courseKeys);
+    const lessonKeys = await redis.keys('lessons:*');
+
+    const allKeys = [...milestoneKeys, ...moduleKeys, ...courseKeys, ...lessonKeys];
+    if (allKeys.length > 0) {
+      const uniqueKeys = [...new Set(allKeys)];
+      await redis.del(...uniqueKeys);
     }
   } catch (error) {
     console.error('Redis clear milestone cache error:', error);

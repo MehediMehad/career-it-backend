@@ -36,10 +36,14 @@ const clearLessonCache = async (moduleId?: string, courseId?: string, lessonId?:
     const generalKeys = await redis.keys('lessons:*');
     keysToDelete.push(...generalKeys);
 
-    if (courseId) {
-      const courseKeys = await redis.keys(`courses:*`);
-      keysToDelete.push(...courseKeys);
-    }
+    const moduleKeys = await redis.keys('modules:*');
+    keysToDelete.push(...moduleKeys);
+
+    const milestoneKeys = await redis.keys('milestones:*');
+    keysToDelete.push(...milestoneKeys);
+
+    const courseKeys = await redis.keys('courses:*');
+    keysToDelete.push(...courseKeys);
 
     if (keysToDelete.length > 0) {
       const uniqueKeys = [...new Set(keysToDelete)];
