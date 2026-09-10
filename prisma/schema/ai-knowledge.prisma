@@ -1,0 +1,16 @@
+model RagKnowledge {
+  id        String   @id @default(uuid())
+  courseId  String?
+  title     String
+  content   String   @db.Text
+  category  String   @default("general")
+  embedding Float[]
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+  @@map("rag_knowledge")
+}

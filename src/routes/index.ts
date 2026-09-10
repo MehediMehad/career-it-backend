@@ -10,6 +10,7 @@ import { ModuleRoutes } from '../app/modules/modules/module.route';
 import { NotificationRoute } from '../app/modules/notification/notification.route';
 import { StudentProfileRoutes } from '../app/modules/student-profiles/student-profile.route';
 import { UploadRoutes } from '../app/modules/upload/upload.route';
+import { AIRoutes } from '../app/modules/ai/ai.route';
 
 const router = express.Router();
 
@@ -53,6 +54,10 @@ const moduleRoutes = [
   {
     path: '/uploads',
     route: UploadRoutes,
+  },
+  {
+    path: '/ai',
+    route: AIRoutes,
   },
 ];
 

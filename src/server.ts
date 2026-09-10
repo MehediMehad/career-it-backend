@@ -21,6 +21,12 @@ async function main() {
       const io = initializeSocket(server);
       global.io = io;
       console.log('✅ Socket.io initialized');
+
+      // Auto-sync AI RAG Knowledge Base
+      const { syncCourseKnowledge } = await import('./app/modules/ai/ai.service');
+      syncCourseKnowledge()
+        .then((res) => console.log(`🧠 AI Knowledge Base synchronized (${res.totalIndexed} chunks indexed)`))
+        .catch((err) => console.error('AI Knowledge sync error on startup:', err?.message));
     });
 
     // 🔐 Handle Uncaught Exceptions

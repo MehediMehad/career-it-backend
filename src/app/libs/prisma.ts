@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
 import pg from 'pg';
 
-dotenv.config({ path: path.join(process.cwd(), '.env') });
+dotenv.config({ path: path.join(process.cwd(), '.env'), override: true });
 
 const connectionString =
   process.env.DATABASE_URL ||

@@ -63,6 +63,9 @@ const config = {
     port: Number(getEnvVar('REDIS_PORT', '6379')),
     password: getEnvVar('REDIS_PASSWORD', ''),
   },
+  gemini: {
+    apiKey: getEnvVar('GEMINI_API_KEY', ''),
+  },
 };
 
 export default config;
