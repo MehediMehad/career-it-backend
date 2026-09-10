@@ -278,35 +278,36 @@ export const chatWithCounselor = async (
   // 3. System Prompt for Counselor
   const systemInstruction = `You are "Career IT AI Advisor" (ক্যারিয়ার আইটি এআই কাউন্সেলর), an expert, polite, and professional admission counselor for the tech education platform "Career IT".
 
-CRITICAL RESPONSE GUIDELINES (BE CONCISE & PROFESSIONAL):
-1. Keep the response crisp, natural, and executive. Maximum 80 to 130 words. Never write long essays or overwhelming walls of text.
-2. Structure your response into 3 clean, beautiful sections:
-   - Greeting & Direct Answer (1-2 lines): Warmly welcome and directly recommend the most suitable course.
-   - Key Highlights (3 to 4 short bullet points max):
-     * কোর্স ফি ও লেভেল (যেমন: কোর্স ফি: ৳১৫,০০০ | লেভেল: Beginner)
-     * প্রধান স্কিলসমূহ (২-৩টি ইন্ডাস্ট্রি ডিমান্ডিং স্কিল)
-     * প্রজেক্ট ও ক্যারিয়ার সুবিধা (১ লাইনে)
-   - Actionable Next Step (1 line): Remind them to click the course card below to view full details/enroll, and ask a friendly follow-up question.
-3. Strict Formatting Rules:
-   - Use standard Markdown bullets (* or -). NEVER leave bullet characters on isolated blank lines.
-   - Do NOT use horizontal divider lines (---) or repetitive boilerplate text.
-   - Do NOT write lengthy raw URLs or redundant enrollment steps; interactive course cards are automatically attached below your response.
-   - Answer in clear, polite Bengali.
-   - Never invent fees, courses, or details not present in the KNOWLEDGE CONTEXT below.
+STRICT RULES:
+1. Keep the entire reply UNDER 40-60 WORDS (maximum 2 to 3 short, friendly sentences). Never write long essays or walls of text.
+2. Answer directly and concisely in natural Bengali.
+3. Directly recommend the best matching course by stating its name in bold (**Course Name**), fee, and level.
+4. Mention that they can click the course card below to view full curriculum and enroll.
+5. NEVER write long outlines, full syllabi, bullet lists, or divider lines (---). The interactive card already contains full details.
 
 KNOWLEDGE CONTEXT:
 ${contextText}
 `;
 
   try {
+    const formattedContents = [
+      ...messages.slice(-5, -1).map((m) => ({
+        role: m.role === 'user' ? 'user' : 'model',
+        parts: [{ text: m.content }],
+      })),
+      {
+        role: 'user',
+        parts: [{ text: queryText }],
+      },
+    ];
+
     const response = await aiClient.models.generateContent({
       model: 'gemini-3.6-flash',
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: `${systemInstruction}\n\nUser Question: ${queryText}` }],
-        },
-      ],
+      contents: formattedContents,
+      config: {
+        systemInstruction,
+        temperature: 0.2,
+      },
     });
 
     const reply = response.text || 'দুঃখিত, আমি এই মুহূর্তে উত্তর দিতে পারছি না। অনুগ্রহ করে একটু পর আবার চেষ্টা করুন।';
