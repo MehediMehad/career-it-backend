@@ -19,7 +19,13 @@ const clearCourseCache = async () => {
     const moduleKeys = await redis.keys('modules:*');
     const lessonKeys = await redis.keys('lessons:*');
 
-    const allKeys = [...courseKeys, ...categoryKeys, ...milestoneKeys, ...moduleKeys, ...lessonKeys];
+    const allKeys = [
+      ...courseKeys,
+      ...categoryKeys,
+      ...milestoneKeys,
+      ...moduleKeys,
+      ...lessonKeys,
+    ];
     if (allKeys.length > 0) {
       const uniqueKeys = [...new Set(allKeys)];
       await redis.del(...uniqueKeys);

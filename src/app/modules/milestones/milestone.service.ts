@@ -296,7 +296,10 @@ const reorderMilestones = async (
 
   if (userPayload.role === UserRoleEnum.INSTRUCTOR) {
     if (course.instructorProfile.userId !== userPayload.userId) {
-      throw new ApiError(httpStatus.FORBIDDEN, 'You can only reorder milestones of your own course');
+      throw new ApiError(
+        httpStatus.FORBIDDEN,
+        'You can only reorder milestones of your own course',
+      );
     }
   }
 

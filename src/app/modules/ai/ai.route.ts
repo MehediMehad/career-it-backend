@@ -24,11 +24,10 @@ router.post(
   '/counselor/chat',
   aiChatLimiter,
   validateRequest(AIValidations.chatSchema),
-  AIController.chatWithCounselor
+  AIController.chatWithCounselor,
 );
 
 // Sync courses and platform info into vector knowledge base
 router.post('/knowledge/sync', AIController.syncKnowledge);
 
 export const AIRoutes = router;
-

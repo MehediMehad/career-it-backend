@@ -11,6 +11,8 @@ import { NotificationRoute } from '../app/modules/notification/notification.rout
 import { StudentProfileRoutes } from '../app/modules/student-profiles/student-profile.route';
 import { UploadRoutes } from '../app/modules/upload/upload.route';
 import { AIRoutes } from '../app/modules/ai/ai.route';
+import { EnrollmentRoutes } from '../app/modules/enrollments/enrollment.route';
+import { PaymentRoutes } from '../app/modules/payments/payment.route';
 
 const router = express.Router();
 
@@ -18,6 +20,14 @@ const moduleRoutes = [
   {
     path: '/auth',
     route: AuthRoute,
+  },
+  {
+    path: '/enrollments',
+    route: EnrollmentRoutes,
+  },
+  {
+    path: '/payments',
+    route: PaymentRoutes,
   },
   {
     path: '/instructor-profiles',

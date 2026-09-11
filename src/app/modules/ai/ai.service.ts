@@ -143,7 +143,10 @@ Course Link: /courses/${course.slug}`;
         .map((m, mIdx) => {
           const moduleList = m.modules
             .map((mod) => {
-              const lessonTopics = mod.lessons.map((l) => l.title).slice(0, 5).join(', ');
+              const lessonTopics = mod.lessons
+                .map((l) => l.title)
+                .slice(0, 5)
+                .join(', ');
               return `  - Module ${mod.moduleNumber}: ${mod.title} (Topics: ${lessonTopics || 'Practical lessons'})`;
             })
             .join('\n');
@@ -203,7 +206,7 @@ Course Page: /courses/${course.id}`;
  */
 export const retrieveRelevantKnowledge = async (
   queryText: string,
-  topK = 4
+  topK = 4,
 ): Promise<IKnowledgeChunk[]> => {
   const allChunks = await prisma.ragKnowledge.findMany();
 
@@ -238,9 +241,7 @@ export const retrieveRelevantKnowledge = async (
 /**
  * Main AI Counselor Chat Engine
  */
-export const chatWithCounselor = async (
-  messages: IChatMessage[]
-): Promise<IChatResponse> => {
+export const chatWithCounselor = async (messages: IChatMessage[]): Promise<IChatResponse> => {
   if (!messages || !messages.length) {
     throw new Error('Messages list cannot be empty');
   }
@@ -273,7 +274,9 @@ export const chatWithCounselor = async (
 
   // Build Context Text
   const contextText = relevantChunks.length
-    ? relevantChunks.map((c, i) => `[Source ${i + 1}: ${c.title}]\n${c.content}`).join('\n\n---\n\n')
+    ? relevantChunks
+        .map((c, i) => `[Source ${i + 1}: ${c.title}]\n${c.content}`)
+        .join('\n\n---\n\n')
     : `Career IT is a premier tech education platform with courses in Web Development, Software Engineering, Cyber Security, etc.`;
 
   // 3. System Prompt for Counselor
@@ -311,11 +314,13 @@ ${contextText}
       },
     });
 
-    const reply = response.text || 'দুঃখিত, আমি এই মুহূর্তে উত্তর দিতে পারছি না। অনুগ্রহ করে একটু পর আবার চেষ্টা করুন।';
+    const reply =
+      response.text ||
+      'দুঃখিত, আমি এই মুহূর্তে উত্তর দিতে পারছি না। অনুগ্রহ করে একটু পর আবার চেষ্টা করুন।';
 
     // Find suggested courses matching retrieved chunks
     const matchedCourseIds = new Set(
-      relevantChunks.map((c) => c.courseId).filter(Boolean) as string[]
+      relevantChunks.map((c) => c.courseId).filter(Boolean) as string[],
     );
 
     let suggestedCourses: ISuggestedCourse[] = [];

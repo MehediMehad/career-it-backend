@@ -41,4 +41,3 @@ export const LessonValidations = {
   updateLessonSchema,
   reorderLessonsSchema,
 };
-

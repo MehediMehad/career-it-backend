@@ -32,4 +32,3 @@ export const AIController = {
   chatWithCounselor,
   syncKnowledge,
 };
-

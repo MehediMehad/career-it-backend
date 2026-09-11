@@ -66,6 +66,15 @@ const config = {
   gemini: {
     apiKey: getEnvVar('GEMINI_API_KEY', ''),
   },
+  urls: {
+    frontend_url: getEnvVar('FRONTEND_URL', 'http://localhost:3000'),
+    backend_url: getEnvVar('BACKEND_URL', 'http://localhost:5000'),
+  },
+  sslcommerz: {
+    store_id: getEnvVar('SSLCOMMERZ_STORE_ID', ''),
+    store_password: getEnvVar('SSLCOMMERZ_STORE_PASSWORD', ''),
+    is_sandbox: getEnvVar('SSLCOMMERZ_IS_SANDBOX', 'true') === 'true',
+  },
 };
 
 export default config;

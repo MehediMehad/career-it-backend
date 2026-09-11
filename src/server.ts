@@ -25,7 +25,9 @@ async function main() {
       // Auto-sync AI RAG Knowledge Base
       const { syncCourseKnowledge } = await import('./app/modules/ai/ai.service');
       syncCourseKnowledge()
-        .then((res) => console.log(`🧠 AI Knowledge Base synchronized (${res.totalIndexed} chunks indexed)`))
+        .then((res) =>
+          console.log(`🧠 AI Knowledge Base synchronized (${res.totalIndexed} chunks indexed)`),
+        )
         .catch((err) => console.error('AI Knowledge sync error on startup:', err?.message));
     });
 

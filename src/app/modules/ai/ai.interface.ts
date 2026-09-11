@@ -28,4 +28,3 @@ export interface IKnowledgeChunk {
   metadata?: Record<string, any>;
   similarity?: number;
 }
-

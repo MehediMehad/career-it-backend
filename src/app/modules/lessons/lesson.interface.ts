@@ -46,4 +46,3 @@ export interface IReorderLessonsPayload {
   moduleId: string;
   items: IReorderLessonItem[];
 }
-

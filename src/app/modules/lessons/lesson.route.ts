@@ -51,4 +51,3 @@ router.delete(
 );
 
 export const LessonRoutes = router;
-
