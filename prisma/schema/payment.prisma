@@ -1,0 +1,40 @@
+model Payment {
+  id              String            @id @default(uuid())
+  transactionId   String            @unique
+  studentId       String
+  courseId        String
+  amount          Decimal           @db.Decimal(10, 2)
+  currency        String            @default("BDT")
+  status          PaymentStatusEnum @default(PENDING)
+  gateway         String            @default("SSLCOMMERZ")
+  
+  // SSLCommerz specific fields
+  valId           String?
+  bankTranId      String?
+  cardType        String?
+  cardBrand       String?
+  cardIssuer      String?
+  gatewayResponse Json?
+  
+  paidAt          DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  // Relations
+  student         User              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course          Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  enrollment      Enrollment?
+
+  @@index([studentId])
+  @@index([courseId])
+  @@index([transactionId])
+  @@map("payments")
+}
+
+enum PaymentStatusEnum {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+  REFUNDED
+}

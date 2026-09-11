@@ -36,6 +36,8 @@ model Course {
   modules            Module[]
   courseCertificates CourseCertificate[]
   ragKnowledge       RagKnowledge[]
+  enrollments        Enrollment[]
+  payments           Payment[]
 
   @@map("courses")
 }

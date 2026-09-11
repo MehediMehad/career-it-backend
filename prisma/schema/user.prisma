@@ -18,6 +18,8 @@ model User {
   instructorProfile  InstructorProfile?
   studentProfile     StudentProfile?
   courseCertificates CourseCertificate[]
+  enrollments        Enrollment[]
+  payments           Payment[]
 
   @@index([name])
   @@map("users")

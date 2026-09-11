@@ -1,0 +1,30 @@
+model Enrollment {
+  id          String               @id @default(uuid())
+  studentId   String
+  courseId    String
+  status      EnrollmentStatusEnum @default(ACTIVE)
+  enrolledAt  DateTime             @default(now())
+  completedAt DateTime?
+  progress    Decimal              @default(0.00) @db.Decimal(5, 2)
+  
+  // Relations
+  student     User                 @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course      Course               @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  payment     Payment?             @relation(fields: [paymentId], references: [id])
+  paymentId   String?              @unique
+
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@unique([studentId, courseId])
+  @@index([studentId])
+  @@index([courseId])
+  @@map("enrollments")
+}
+
+enum EnrollmentStatusEnum {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
